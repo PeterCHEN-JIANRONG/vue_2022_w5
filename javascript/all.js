@@ -72,12 +72,19 @@ app.component('productModal', {
     openModal() {
       this.modal.show();
     },
+    closeModal() {
+      this.modal.hide();
+    },
     getProduct() {
       const url = `${this.apiUrl}/api/${this.apiPath}/product/${this.productId}`;
       axios.get(url).then((res) => {
         this.product = res.data.product;
         this.openModal();
       });
+    },
+    addCart() {
+      this.$emit('add-cart', this.product.id);
+      this.closeModal();
     },
   },
   mounted() {

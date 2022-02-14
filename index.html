@@ -18,7 +18,8 @@
     <div class="container">
       <div class="mt-4">
         <!-- 產品Modal -->
-        <product-modal ref="productModal" :product-id="productId"></product-modal>
+        <product-modal ref="productModal" :product-id="productId"
+        @add-cart="addToCart"></product-modal>
         <!-- 產品Modal -->
 
         <table class="table align-middle">
@@ -54,7 +55,7 @@
                   @click="openProductModal(item.id)">
                     查看更多
                   </button>
-                  <button type="button" class="btn btn-outline-danger"
+                  <button type="button" class="btn btn-danger"
                   @click="addToCart(item.id)">
                     加到購物車
                   </button>
@@ -81,7 +82,6 @@
                 <tr>
                   <td>
                     <button type="button" class="btn btn-outline-danger btn-sm">
-                      <i class="fas fa-spinner fa-pulse"></i>
                       x
                     </button>
                   </td>
@@ -192,7 +192,9 @@
           <div class="input-group">
             <input type="number" class="form-control" min="1" 
             v-model="qty">
-            <button type="button" class="btn btn-primary">加入購物車</button>
+            <button type="button" class="btn btn-primary"
+            @click="addCart"
+            >加入購物車</button>
           </div>
         </div>
       </div>
