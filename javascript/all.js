@@ -1,6 +1,8 @@
 /* global axios,bootstrap */
 // eslint-disable-next-line
 import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.31/vue.esm-browser.min.js';
+// eslint-disable-next-line import/extensions
+import userProductModal from './component/userProductModal.js';
 
 const app = createApp({
   data() {
@@ -91,49 +93,6 @@ const app = createApp({
   },
 });
 
-app.component('productModal', {
-  template: '#userProductModal',
-  props: ['productId'],
-  data() {
-    return {
-      modal: null,
-      product: {},
-      apiUrl: 'https://vue3-course-api.hexschool.io/v2',
-      apiPath: 'peter_vue2022',
-      qty: 1,
-    };
-  },
-  watch: {
-    productId() {
-      this.getProduct();
-    },
-  },
-  methods: {
-    openModal() {
-      this.qty = 1;
-      this.modal.show();
-    },
-    closeModal() {
-      this.modal.hide();
-    },
-    getProduct() {
-      const url = `${this.apiUrl}/api/${this.apiPath}/product/${this.productId}`;
-      axios.get(url).then((res) => {
-        this.product = res.data.product;
-        this.openModal();
-      });
-    },
-    addCart() {
-      this.$emit('add-cart', this.product.id, this.qty);
-    },
-  },
-  mounted() {
-    this.modal = new bootstrap.Modal(this.$refs.modal, {
-      backdrop: true,
-      keyboard: true,
-      focus: true,
-    });
-  },
-});
+app.component('productModal', userProductModal);
 
 app.mount('#app');
