@@ -44,6 +44,24 @@ const app = createApp({
         }
       });
     },
+    removeCart(id) {
+      const url = `${this.apiUrl}/api/${this.apiPath}/cart/${id}`;
+      axios.delete(url).then((res) => {
+        if (res.data.success) {
+          alert(res.data.message);
+          this.getCart();
+        }
+      });
+    },
+    removeCartAll() {
+      const url = `${this.apiUrl}/api/${this.apiPath}/carts`;
+      axios.delete(url).then((res) => {
+        if (res.data.success) {
+          alert(res.data.message);
+          this.getCart();
+        }
+      });
+    }
   },
   mounted() {
     this.getProducts();
