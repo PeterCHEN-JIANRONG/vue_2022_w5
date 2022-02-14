@@ -31,26 +31,31 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr v-for="item in products" :key="item.id">
                 <td style="width: 200px">
-                  <div style="height: 100px; background-size: cover; background-position: center"></div>
+                  <div 
+                  v-if="item.imageUrl"
+                  :style="{ backgroundImage:`url(${item.imageUrl})`}"
+                  style="height: 100px; background-size: cover; background-position: center"></div>
                 </td>
                 <td>
-                  {{  }}
+                  {{ item.title }}
                 </td>
                 <td>
-                  <div class="h5">{{  }} 元</div>
-                  <del class="h6">原價 {{  }} 元</del>
-                  <div class="h5">現在只要 {{  }} 元</div>
+                  <template v-if="item.price === item.origin_price">
+                    <div class="h5">{{ item.price }} 元</div>
+                  </template>
+                  <template v-else>
+                    <del class="h6">原價 {{ item.origin_price }} 元</del>
+                    <div class="h5">現在只要 {{ item.price }} 元</div>
+                  </template>
                 </td>
                 <td>
                   <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-outline-secondary">
-                      <i class="fas fa-spinner fa-pulse"></i>
                       查看更多
                     </button>
                     <button type="button" class="btn btn-outline-danger">
-                      <i class="fas fa-spinner fa-pulse"></i>
                       加到購物車
                     </button>
                   </div>
