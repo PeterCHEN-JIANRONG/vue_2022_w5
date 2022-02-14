@@ -52,11 +52,13 @@
               <td>
                 <div class="btn-group btn-group-sm">
                   <button type="button" class="btn btn-outline-secondary"
-                  @click="openProductModal(item.id)">
+                  @click="openProductModal(item.id)" :disabled="isLoadingItem === item.id">
                     查看更多
                   </button>
                   <button type="button" class="btn btn-danger"
-                  @click="addToCart(item.id)">
+                  @click="addToCart(item.id)" :disabled="isLoadingItem === item.id">
+                    <span class="spinner-grow spinner-grow-sm"
+                    v-show="isLoadingItem === item.id"></span>
                     加到購物車
                   </button>
                 </div>
@@ -67,7 +69,7 @@
         <!-- 購物車列表 -->
         <div class="text-end">
           <button class="btn btn-outline-danger" type="button"
-          @click="removeCartAll">
+          @click="removeCartAll" :disabled="cartData.carts?.length === 0 || isLoadingItem === true">
             清空購物車</button>
         </div>
         <table class="table align-middle">
@@ -84,7 +86,7 @@
                 <tr>
                   <td>
                     <button type="button" class="btn btn-outline-danger btn-sm"
-                    @click="removeCart(item.id)">
+                    @click="removeCart(item.id)" :disabled="isLoadingItem === item.id">
                       x
                     </button>
                   </td>
@@ -97,8 +99,12 @@
                   <td>
                     <div class="input-group input-group-sm">
                       <div class="input-group mb-3">
-                        <input min="1" type="number" class="form-control"
-                        v-model="item.qty">
+                        <!-- <input min="1" type="number" class="form-control"
+                        v-model="item.qty"> -->
+                        <select class="form-select" v-model.number="item.qty"
+                        @change="updateCart(item)" :disabled="isLoadingItem === item.id">
+                          <option v-for="num in 20" :key="`${num}${item.id}`">{{num}}</option>
+                        </select>
                         <span class="input-group-text" id="basic-addon2">{{ item.product.unit }}</span>
                       </div>
                     </div>
@@ -194,7 +200,7 @@
           <div>
           <div class="input-group">
             <input type="number" class="form-control" min="1" 
-            v-model="qty">
+            v-model.number="qty">
             <button type="button" class="btn btn-primary"
             @click="addCart"
             >加入購物車</button>

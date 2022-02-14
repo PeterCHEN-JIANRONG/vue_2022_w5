@@ -10,6 +10,7 @@ const app = createApp({
       products: [],
       cartData: [],
       productId: '',
+      isLoadingItem: '',
     };
   },
   methods: {
@@ -33,6 +34,7 @@ const app = createApp({
       });
     },
     addToCart(id, qty = 1) {
+      this.isLoadingItem = id;
       const data = {
         product_id: id,
         qty,
@@ -40,28 +42,48 @@ const app = createApp({
       const url = `${this.apiUrl}/api/${this.apiPath}/cart`;
       axios.post(url, { data }).then((res) => {
         if (res.data.success) {
+          this.isLoadingItem = '';
+          this.getCart();
+          this.$refs.productModal.closeModal();
+        }
+      });
+    },
+    updateCart(item) {
+      const data = {
+        product_id: item.product_id,
+        qty: item.qty,
+      };
+      this.isLoadingItem = item.id;
+      const url = `${this.apiUrl}/api/${this.apiPath}/cart/${item.id}`;
+      axios.put(url, { data }).then((res) => {
+        if (res.data.success) {
+          this.isLoadingItem = '';
           this.getCart();
         }
       });
     },
     removeCart(id) {
+      this.isLoadingItem = id;
       const url = `${this.apiUrl}/api/${this.apiPath}/cart/${id}`;
       axios.delete(url).then((res) => {
         if (res.data.success) {
+          this.isLoadingItem = '';
           alert(res.data.message);
           this.getCart();
         }
       });
     },
     removeCartAll() {
+      this.isLoadingItem = true;
       const url = `${this.apiUrl}/api/${this.apiPath}/carts`;
       axios.delete(url).then((res) => {
         if (res.data.success) {
+          this.isLoadingItem = '';
           alert(res.data.message);
           this.getCart();
         }
       });
-    }
+    },
   },
   mounted() {
     this.getProducts();
@@ -88,6 +110,7 @@ app.component('productModal', {
   },
   methods: {
     openModal() {
+      this.qty = 1;
       this.modal.show();
     },
     closeModal() {
@@ -101,8 +124,7 @@ app.component('productModal', {
       });
     },
     addCart() {
-      this.$emit('add-cart', this.product.id);
-      this.closeModal();
+      this.$emit('add-cart', this.product.id, this.qty);
     },
   },
   mounted() {
