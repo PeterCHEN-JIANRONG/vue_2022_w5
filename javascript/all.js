@@ -31,6 +31,7 @@ const app = Vue.createApp({
       products: [],
       cartData: [],
       productId: '',
+      isLoading: false,
       isLoadingItem: '',
       form: {
         user: {
@@ -50,10 +51,13 @@ const app = Vue.createApp({
   },
   methods: {
     getProducts() {
+      this.isLoading = true;
       const url = `${apiUrl}/api/${apiPath}/products/all`;
       axios.get(url).then((res) => {
+        this.isLoading = false;
         this.products = res.data.products;
       }).catch((err) => {
+        this.isLoading = false;
         alert(err.data.message);
       });
     },
@@ -125,9 +129,11 @@ const app = Vue.createApp({
     },
     createOrder() {
       this.isLoadingItem = true;
+      this.isLoading = true;
       const url = `${apiUrl}/api/${apiPath}/order`;
       axios.post(url, { data: this.form }).then((res) => {
         this.isLoadingItem = '';
+        this.isLoading = false;
         this.getCart();
         this.$refs.form.resetForm();
         alert(res.data.message);
@@ -143,5 +149,6 @@ const app = Vue.createApp({
 });
 
 app.component('productModal', userProductModal);
+app.component('Loading', VueLoading.Component);
 
 app.mount('#app');
