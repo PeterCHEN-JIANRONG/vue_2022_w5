@@ -11,6 +11,7 @@
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css'
     integrity='sha512-q3eWabyZPc1XTCmF+8/LuE1ozpg5xxn7iO89yfSOd5/oKvyqLngoNGsx8jq92Y8eXJ/IRxQbEC+FGSYxtk2oiw=='
     crossorigin='anonymous' />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-loading-overlay@5.0.2/dist/vue-loading.css">
 </head>
 
 <body>
@@ -21,7 +22,9 @@
         <product-modal ref="productModal" :product-id="productId"
         @add-cart="addToCart"></product-modal>
         <!-- 產品Modal -->
-
+        <!-- vue-loading-overlay -->
+        <loading v-model:active="isLoading"></loading>
+        <!-- vue-loading-overlay -->
         <table class="table align-middle">
           <thead>
             <tr>
@@ -129,45 +132,54 @@
         </table>
       </div>
       <div class="my-5 row justify-content-center">
-        <!-- <v-form ref="form" class="col-md-6" v-slot="{ errors }" >
+        <v-form ref="form" class="col-md-6" v-slot="{ errors }"
+        @submit="createOrder">
             <div class="mb-3">
               <label for="email" class="form-label">Email</label>
               <v-field id="email" name="email" type="email" class="form-control"
-                       :class="{ 'is-invalid': errors['email'] }" placeholder="請輸入 Email" 
-                      ></v-field>
+              :class="{ 'is-invalid': errors['email'] }" placeholder="請輸入 Email"
+              v-model="form.user.email" rules="email|required"></v-field>
               <error-message name="email" class="invalid-feedback"></error-message>
             </div>
 
             <div class="mb-3">
               <label for="name" class="form-label">收件人姓名</label>
-              <v-field id="name" name="姓名" type="text" class="form-control" :class="{ 'is-invalid': errors['姓名'] }"
-                       placeholder="請輸入姓名" rules="required"></v-field>
+              <v-field id="name" name="姓名" type="text" class="form-control" 
+              :class="{ 'is-invalid': errors['姓名'] }" placeholder="請輸入姓名"
+              v-model="form.user.name" rules="required"></v-field>
               <error-message name="姓名" class="invalid-feedback"></error-message>
             </div>
 
             <div class="mb-3">
               <label for="tel" class="form-label">收件人電話</label>
-              <v-field id="tel" name="電話" type="text" class="form-control" :class="{ 'is-invalid': errors['電話'] }"
-                       placeholder="請輸入電話" ></v-field>
+              <v-field id="tel" name="電話" type="text" class="form-control" 
+              :class="{ 'is-invalid': errors['電話'] }" placeholder="請輸入電話"
+              v-model="form.user.tel" rules="required|min:8|max:10"></v-field>
               <error-message name="電話" class="invalid-feedback"></error-message>
             </div>
 
             <div class="mb-3">
               <label for="address" class="form-label">收件人地址</label>
-              <v-field id="address" name="地址" type="text" class="form-control" :class="{ 'is-invalid': errors['地址'] }"
-                       placeholder="請輸入地址" rules="required" ></v-field>
+              <v-field id="address" name="地址" type="text" class="form-control" 
+              :class="{ 'is-invalid': errors['地址'] }" placeholder="請輸入地址" 
+              v-model="form.user.address" rules="required"></v-field>
               <error-message name="地址" class="invalid-feedback"></error-message>
             </div>
 
             <div class="mb-3">
               <label for="message" class="form-label">留言</label>
-              <textarea id="message" class="form-control" cols="30" rows="10" ></textarea>
+              <textarea id="message" class="form-control" cols="30" rows="10"
+              v-model="form.message"></textarea>
             </div>
             <div class="text-end">
               <button type="submit" class="btn btn-danger"
-                      >送出訂單</button>
+              :disabled="cartData.carts?.length === 0 
+              || Object.keys(errors).length > 0
+              || isLoadingItem === true">
+                送出訂單
+              </button>
             </div>
-          </v-form> -->
+          </v-form>
       </div>
     </div>
   </div>
@@ -201,7 +213,7 @@
           <div class="input-group">
             <input type="number" class="form-control" min="1" 
             v-model.number="qty">
-            <button type="button" class="btn btn-primary"
+            <button type="button" class="btn btn-danger"
             @click="addCart"
             >加入購物車</button>
           </div>
@@ -224,10 +236,14 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js"
     integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc"
     crossorigin="anonymous"></script>
+  
+  <!-- 加入 VeeValidation 相關資源 ※VeeValidate無ESM版,只支援CDN的Vue, 不要使用ESM的Vue -->
   <script src="https://unpkg.com/vue@next"></script>
   <script src="https://unpkg.com/vee-validate@next"></script>
   <script src="https://unpkg.com/@vee-validate/i18n@4.1.0"></script>
   <script src="https://unpkg.com/@vee-validate/rules"></script>
+  <!-- vue-loading-overlay -要放在vue cdn之後 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue-loading-overlay@5.0.2/dist/vue-loading.min.js"></script>
   <script src="./javascript/all.js" type="module"></script>
 </body>
 
