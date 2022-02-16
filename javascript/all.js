@@ -1,6 +1,7 @@
 /* global axios,Vue,VeeValidate,VeeValidateRules,VeeValidateI18n */
 // eslint-disable-next-line import/extensions
 import userProductModal from './component/userProductModal.js';
+import pagination from './component/Pagination.js';
 
 const { defineRule, Form, Field, ErrorMessage, configure } = VeeValidate;
 const { required, email, min, max } = VeeValidateRules;
@@ -29,6 +30,7 @@ const app = Vue.createApp({
   data() {
     return {
       products: [],
+      pagination: {},
       cartData: [],
       productId: '',
       isLoading: false,
@@ -48,14 +50,17 @@ const app = Vue.createApp({
     VForm: Form,
     VField: Field,
     ErrorMessage,
+    pagination,
   },
   methods: {
-    getProducts() {
+    getProducts(page = 1) {
       this.isLoading = true;
-      const url = `${apiUrl}/api/${apiPath}/products/all`;
+      const url = `${apiUrl}/api/${apiPath}/products?page=${page}`;
       axios.get(url).then((res) => {
         this.isLoading = false;
         this.products = res.data.products;
+        this.pagination = res.data.pagination;
+        document.documentElement.scrollTop = 0; // 頁面置頂
       }).catch((err) => {
         this.isLoading = false;
         alert(err.data.message);
