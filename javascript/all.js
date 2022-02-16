@@ -1,25 +1,60 @@
-/* global axios,bootstrap */
-// eslint-disable-next-line
-import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.31/vue.esm-browser.min.js';
+/* global axios,Vue,VeeValidate,VeeValidateRules,VeeValidateI18n */
 // eslint-disable-next-line import/extensions
 import userProductModal from './component/userProductModal.js';
 
-const app = createApp({
+const { defineRule, Form, Field, ErrorMessage, configure } = VeeValidate;
+const { required, email, min, max } = VeeValidateRules;
+const { localize, loadLocaleFromURL } = VeeValidateI18n;
+
+// 載入規則
+defineRule('required', required);
+defineRule('email', email);
+defineRule('min', min);
+defineRule('max', max);
+
+// 載入多國語系
+loadLocaleFromURL('https://unpkg.com/@vee-validate/i18n@4.1.0/dist/locale/zh_TW.json');
+
+// Activate the locale
+configure({
+  generateMessage: localize('zh_TW'),
+  validateOnInput: true, // 調整為輸入字元立即進行驗證
+});
+
+// 全域設定
+const apiUrl = 'https://vue3-course-api.hexschool.io/v2';
+const apiPath = 'peter_vue2022';
+
+const app = Vue.createApp({
   data() {
     return {
-      apiUrl: 'https://vue3-course-api.hexschool.io/v2',
-      apiPath: 'peter_vue2022',
       products: [],
       cartData: [],
       productId: '',
       isLoadingItem: '',
+      form: {
+        user: {
+          name: '',
+          email: '',
+          tel: '',
+          address: '',
+        },
+        message: '',
+      },
     };
+  },
+  components: {
+    VForm: Form,
+    VField: Field,
+    ErrorMessage,
   },
   methods: {
     getProducts() {
-      const url = `${this.apiUrl}/api/${this.apiPath}/products/all`;
+      const url = `${apiUrl}/api/${apiPath}/products/all`;
       axios.get(url).then((res) => {
         this.products = res.data.products;
+      }).catch((err) => {
+        alert(err.data.message);
       });
     },
     openProductModal(id) {
@@ -30,9 +65,11 @@ const app = createApp({
       }
     },
     getCart() {
-      const url = `${this.apiUrl}/api/${this.apiPath}/cart`;
+      const url = `${apiUrl}/api/${apiPath}/cart`;
       axios.get(url).then((res) => {
         this.cartData = res.data.data;
+      }).catch((err) => {
+        alert(err.data.message);
       });
     },
     addToCart(id, qty = 1) {
@@ -41,13 +78,13 @@ const app = createApp({
         product_id: id,
         qty,
       };
-      const url = `${this.apiUrl}/api/${this.apiPath}/cart`;
+      const url = `${apiUrl}/api/${apiPath}/cart`;
       axios.post(url, { data }).then((res) => {
-        if (res.data.success) {
-          this.isLoadingItem = '';
-          this.getCart();
-          this.$refs.productModal.closeModal();
-        }
+        this.isLoadingItem = '';
+        this.getCart();
+        this.$refs.productModal.closeModal();
+      }).catch((err) => {
+        alert(err.data.message);
       });
     },
     updateCart(item) {
@@ -56,34 +93,46 @@ const app = createApp({
         qty: item.qty,
       };
       this.isLoadingItem = item.id;
-      const url = `${this.apiUrl}/api/${this.apiPath}/cart/${item.id}`;
+      const url = `${apiUrl}/api/${apiPath}/cart/${item.id}`;
       axios.put(url, { data }).then((res) => {
-        if (res.data.success) {
-          this.isLoadingItem = '';
-          this.getCart();
-        }
+        this.isLoadingItem = '';
+        this.getCart();
+      }).catch((err) => {
+        alert(err.data.message);
       });
     },
     removeCart(id) {
       this.isLoadingItem = id;
-      const url = `${this.apiUrl}/api/${this.apiPath}/cart/${id}`;
+      const url = `${apiUrl}/api/${apiPath}/cart/${id}`;
       axios.delete(url).then((res) => {
-        if (res.data.success) {
-          this.isLoadingItem = '';
-          alert(res.data.message);
-          this.getCart();
-        }
+        this.isLoadingItem = '';
+        alert(res.data.message);
+        this.getCart();
+      }).catch((err) => {
+        alert(err.data.message);
       });
     },
     removeCartAll() {
       this.isLoadingItem = true;
-      const url = `${this.apiUrl}/api/${this.apiPath}/carts`;
+      const url = `${apiUrl}/api/${apiPath}/carts`;
       axios.delete(url).then((res) => {
-        if (res.data.success) {
-          this.isLoadingItem = '';
-          alert(res.data.message);
-          this.getCart();
-        }
+        this.isLoadingItem = '';
+        this.getCart();
+        alert(res.data.message);
+      }).catch((err) => {
+        alert(err.data.message);
+      });
+    },
+    createOrder() {
+      this.isLoadingItem = true;
+      const url = `${apiUrl}/api/${apiPath}/order`;
+      axios.post(url, { data: this.form }).then((res) => {
+        this.isLoadingItem = '';
+        this.getCart();
+        this.$refs.form.resetForm();
+        alert(res.data.message);
+      }).catch((err) => {
+        alert(err.data.message);
       });
     },
   },

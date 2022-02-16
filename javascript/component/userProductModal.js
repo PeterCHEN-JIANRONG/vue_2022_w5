@@ -1,3 +1,4 @@
+/* global axios,bootstrap */
 export default {
   template: '#userProductModal',
   props: ['productId'],
