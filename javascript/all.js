@@ -156,6 +156,12 @@ const app = Vue.createApp({
       this.isLoading = state;
     });
   },
+  unmounted() {
+    emitter.off('loading', (state) => {
+      console.log(state);
+      this.isLoading = state;
+    });
+  },
 });
 
 app.component('productModal', userProductModal);
