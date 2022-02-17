@@ -1,4 +1,6 @@
 /* global axios,bootstrap */
+const emitter = mitt();
+
 export default {
   template: '#userProductModal',
   props: ['productId'],
@@ -25,8 +27,10 @@ export default {
       this.modal.hide();
     },
     getProduct() {
+      emitter.emit('loading', true);
       const url = `${this.apiUrl}/api/${this.apiPath}/product/${this.productId}`;
       axios.get(url).then((res) => {
+        emitter.emit('loading', false);
         this.product = res.data.product;
         this.openModal();
       });

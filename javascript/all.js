@@ -2,6 +2,7 @@
 // eslint-disable-next-line import/extensions
 import userProductModal from './component/userProductModal.js';
 import pagination from './component/Pagination.js';
+const emitter = mitt();
 
 const { defineRule, Form, Field, ErrorMessage, configure } = VeeValidate;
 const { required, email, min, max } = VeeValidateRules;
@@ -150,6 +151,10 @@ const app = Vue.createApp({
   mounted() {
     this.getProducts();
     this.getCart();
+    emitter.on('loading', (state) => {
+      console.log(state);
+      this.isLoading = state;
+    });
   },
 });
 
