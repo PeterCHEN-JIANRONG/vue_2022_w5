@@ -1,5 +1,6 @@
 /* global axios,bootstrap */
-const emitter = mitt();
+// const emitter = mitt();
+import emitter from "../emitter.js";
 
 export default {
   template: '#userProductModal',
