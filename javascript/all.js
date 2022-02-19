@@ -152,13 +152,11 @@ const app = Vue.createApp({
     this.getProducts();
     this.getCart();
     emitter.on('loading', (state) => {
-      console.log(state);
       this.isLoading = state;
     });
   },
   unmounted() {
     emitter.off('loading', (state) => {
-      console.log(state);
       this.isLoading = state;
     });
   },
