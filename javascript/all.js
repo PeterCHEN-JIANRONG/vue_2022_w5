@@ -2,7 +2,7 @@
 // eslint-disable-next-line import/extensions
 import userProductModal from './component/userProductModal.js';
 import pagination from './component/Pagination.js';
-import emitter from "./emitter.js";
+import emitter from "./methods/emitter.js";
 
 const { defineRule, Form, Field, ErrorMessage, configure } = VeeValidate;
 const { required, email, min, max } = VeeValidateRules;
